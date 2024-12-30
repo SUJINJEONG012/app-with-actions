@@ -8,7 +8,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
 @Entity
-@Table(name = "user")  // 테이블 이름을 명시적으로 지정 (JPA는 기본적으로 클래스 이름을 테이블 이름으로 사용)
+@Table(name = "user") 
 public class User {
 
     @Id
@@ -34,7 +34,7 @@ public class User {
         this.password = password;
     }
 
-    // Getter와 Setter 메서드
+   
     public Long getId() {
         return id;
     }
