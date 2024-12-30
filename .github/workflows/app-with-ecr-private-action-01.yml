@@ -14,32 +14,6 @@ jobs:
 
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v3
-      
-    - run: docker buildx build -t app .
-
-    - name: Configure AWS credentials
-      uses: aws-actions/configure-aws-credentials@v4
-      with:
-        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        aws-region: us-east-1
-
-    - name: Login to Amazon ECR Publicname: Build and Push Docker Image To AWS ECR
-on:
-  push:
-    branches:
-      - main
-
-jobs:
-  build-push-image:
-    runs-on: ubuntu-latest
-
-    steps:
-    - name: Checkout
-      uses: actions/checkout@v4
-
-    - name: Set up Docker Buildx
-      uses: docker/setup-buildx-action@v3
 
     - name: Configure AWS credentials
       uses: aws-actions/configure-aws-credentials@v4
@@ -48,7 +22,7 @@ jobs:
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         aws-region: ap-northeast-2
 
-    - name: Login to Amazon ECR
+    - name: Login to Amazon ECR (Private)
       run: |
         aws ecr get-login-password --region ap-northeast-2 | docker login --username AWS --password-stdin ${{ secrets.ECR_ID }}.dkr.ecr.ap-northeast-2.amazonaws.com
 
@@ -59,19 +33,3 @@ jobs:
     - name: Push Docker image to Amazon ECR
       run: |
         docker push ${{ secrets.ECR_ID }}.dkr.ecr.ap-northeast-2.amazonaws.com/first-private-ecr:latest
-
-      id: login-ecr-public
-      uses: aws-actions/amazon-ecr-login@v2
-      with:
-        registry-type: public
-
-    - name: Build, tag, and push docker image to Amazon ECR Public
-      env:
-        REGISTRY: ${{ steps.login-ecr-public.outputs.registry }}
-        REGISTRY_ALIAS: ${{ secrets.ECR_ID }}
-        REPOSITORY: first-private-ecr
-        IMAGE_TAG: latest
-      run: |
-        aws ecr-public get-login-password --region us-east-1 | docker login --username AWS --password-stdin public.ecr.aws/${{ secrets.ECR_ID }}
-        docker build -t $REGISTRY/$REGISTRY_ALIAS/$REPOSITORY:$IMAGE_TAG .
-        docker push $REGISTRY/$REGISTRY_ALIAS/$REPOSITORY:$IMAGE_TAG
