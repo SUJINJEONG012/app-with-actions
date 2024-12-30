@@ -24,12 +24,12 @@ jobs:
 
     - name: Login to Amazon ECR (Private)
       run: |
-        aws ecr get-login-password --region ap-northeast-2 | docker login --username AWS --password-stdin ${{ secrets.ECR_ID }}.dkr.ecr.ap-northeast-2.amazonaws.com
+        aws ecr get-login-password --region ap-northeast-2 | docker login --username AWS --password-stdin ${{ secrets.ECR_PRIVATE_ID }}.dkr.ecr.ap-northeast-2.amazonaws.com
 
     - name: Build Docker image
       run: |
-        docker build -t ${{ secrets.ECR_ID }}.dkr.ecr.ap-northeast-2.amazonaws.com/first-private-ecr:latest .
+        docker build -t ${{ secrets.ECR_PRIVATE_ID }}.dkr.ecr.ap-northeast-2.amazonaws.com/${{ secrets.ECR_PRIVATE_REPOSITORY }}:latest .
 
     - name: Push Docker image to Amazon ECR
       run: |
-        docker push ${{ secrets.ECR_ID }}.dkr.ecr.ap-northeast-2.amazonaws.com/first-private-ecr:latest
+        docker push ${{ secrets.ECR_PRIVATE_ID }}.dkr.ecr.ap-northeast-2.amazonaws.com/${{ secrets.ECR_PRIVATE_REPOSITORY }}:latest
